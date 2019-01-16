@@ -8,39 +8,26 @@
 
 #import "UIViewController+Hook.h"
 #import "RuntimeHelper.h"
+#import "blackboard-Swift.h"
+#import <Mars/Mars.h>
 
-static char kStartDate;
 
 @implementation UIViewController (Hook)
 
-@dynamic startDate;
-
-+ (void)load{
-    [self sel_exchangeFromSel:@selector(viewDidAppear:) toSel:@selector(hool_ViewDidAppear)];
-    [self sel_exchangeFromSel:@selector(viewDidAppear:) toSel:@selector(hook_ViewDidDisAppear)];
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self sel_exchangeFromSel:@selector(viewDidLoad) toSel:@selector(hook_ViewDidLoad)];
+    });
 }
 
-- (void)hool_ViewDidAppear {
-    NSString *key = NSStringFromClass([self class]);
-    [[NSUserDefaults standardUserDefaults] setObject:nil forKey: key];
-    self.startDate = [NSDate  date];
-    [self hool_ViewDidAppear];
-}
+- (void)hook_ViewDidLoad {
+    if (![self isKindOfClass:[UINavigationController class]] && ![self isKindOfClass:[UITabBarController class]]) {
+        NSString *name = [PathHelper getClassTypeWithSender:self];
+        [SLMarsIO addCreateWithNSString:name withNSString:nil];
+    }
 
-- (void)hook_ViewDidDisAppear{
-    NSDate *endDate = [NSDate date];
-    NSString *survivalT = [NSString stringWithFormat:@"survival:%.2lfs", [endDate timeIntervalSinceDate: self.startDate]];
-    NSString *key = NSStringFromClass([self class]);
-    [[NSUserDefaults standardUserDefaults] setObject:survivalT forKey: key];
-    [self hook_ViewDidDisAppear];
-}
-
-- (void)setStartDate:(NSDate *)startDate {
-    objc_setAssociatedObject(self, &kStartDate, startDate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSDate *)startDate {
-    return (NSDate *)objc_getAssociatedObject(self, &kStartDate);
+    [self hook_ViewDidLoad];
 }
 
 @end

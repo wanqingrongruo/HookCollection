@@ -21,7 +21,9 @@
 - (void)sel_exchangeClass:(Class)class fromSel:(SEL)sel1 toSel:(SEL)sel2 {
     Method fromMethod = class_getInstanceMethod(class, sel1);
     Method toMethod = class_getInstanceMethod(class, sel2);
-    method_exchangeImplementations(fromMethod, toMethod);
+    if (![self class_addMethod:class selector:sel2 imp:method_getImplementation(toMethod) types:method_getTypeEncoding(toMethod)]) {
+        method_exchangeImplementations(fromMethod, toMethod);
+    }
 }
 
 - (void)method_exchangeImplementations:(Method)fromMethod method:(Method)toMethod {

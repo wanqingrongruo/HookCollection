@@ -10,6 +10,7 @@
 #import "RuntimeHelper.h"
 #import "blackboard-Swift.h"
 #import <Mars/Mars.h>
+#import "UIGestureRecognizer+Hook.h"
 
 @implementation UIView (Hook)
 
@@ -38,7 +39,7 @@
 - (void)autoEventAction:(UIGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateEnded) {
         NSString *viewControllerName = [PathHelper getMyViewControllerWithSender:gesture];
-        NSString *actionName = @"手势点击";
+        NSString *actionName = gesture.methodName;
         [SLMarsIO addClickWithNSString:viewControllerName withNSString:nil withNSString:actionName withNSString:@"手势点击"];
     }
 }
