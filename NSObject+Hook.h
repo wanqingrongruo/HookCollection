@@ -12,6 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^DeallocCallback)(void);
+
 @interface NSObject (Hook)
 
 - (BOOL)class_addMethod:(Class)class selector:(SEL)selector imp:(IMP)imp types:(const char *)types;
@@ -27,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isContainSel:(SEL)sel inClass:(Class)class;
 
 - (void)log_class_copyMethodList:(Class)class;
+
+- (void)setDeallocCallback:(DeallocCallback)callback;
+- (DeallocCallback)deallocCallback;
 
 @end
 

@@ -22,7 +22,7 @@
 
 - (BOOL)hook_sendAction:(SEL)action to:(nullable id)target from:(nullable id)sender forEvent:(nullable UIEvent *)event {
     Class class = [target class];
-    NSString *viewControllerName = @"Unkown";
+    NSString *viewControllerName = @"unknown";
     if ([class isKindOfClass:[UIViewController class]]) {
         viewControllerName = NSStringFromClass([target class]);
     } else {

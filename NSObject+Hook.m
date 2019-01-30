@@ -10,6 +10,33 @@
 
 @implementation NSObject (Hook)
 
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Method oriMethod = class_getInstanceMethod([self class], NSSelectorFromString(@"dealloc"));
+        Method repMethod = class_getInstanceMethod([self class], @selector(myselfDealloc));
+        method_exchangeImplementations(oriMethod, repMethod);
+    });
+}
+
+- (void)myselfDealloc {
+    DeallocCallback callback = [self deallocCallback];
+    if (callback) {
+        callback(); //对象释放前的主要操作
+    }
+    [self myselfDealloc];
+}
+
+- (void)setDeallocCallback:(DeallocCallback)callback
+{
+    objc_setAssociatedObject(self, _cmd, callback, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (DeallocCallback)deallocCallback
+{
+    return objc_getAssociatedObject(self, @selector(setDeallocCallback:));
+}
+
 - (BOOL)class_addMethod:(Class)class selector:(SEL)selector imp:(IMP)imp types:(const char *)types {
     return class_addMethod(class,selector,imp,types);
 }
